@@ -1,4 +1,6 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 from products.models import Product
 from category.models import Category
 from subcategory.models import Subcategory
@@ -11,6 +13,9 @@ def store(request, category_slug=None, subcategory_slug=None):
     if category_slug is not None:
         categories = get_object_or_404(Category, slug=category_slug)
         products = Product.objects.filter(category=categories, is_available__in=[True])
+        paginator = Paginator(products, 3)
+        page = request.GET.get('page')
+        paged_products = paginator.get_page(page)
         product_count = products.count()
 
         if subcategory_slug is not None:
@@ -20,10 +25,13 @@ def store(request, category_slug=None, subcategory_slug=None):
 
     else:
         products = Product.objects.all()
+        paginator = Paginator(products, 9)
+        page = request.GET.get('page')
+        paged_products = paginator.get_page(page)
         product_count = products.count()
 
     context = {
-        'products': products,
+        'products': paged_products,
         'product_count': product_count,
     }
     return render(request, template_name='store/store.html', context=context)
@@ -42,3 +50,18 @@ def product_detail(request, category_slug=None, subcategory_slug=None, product_s
         'single_product': single_product,
     }
     return render(request, template_name='store/product_detail.html', context=context)
+
+
+# Search functionality
+def search(request):
+    if 'keyword' in request.GET:
+        keyword = request.GET['keyword']
+        if keyword:
+            products = Product.objects.filter(Q(description__contains=keyword) | Q(product_name__contains=keyword))
+            product_count = products.count()
+
+    context = {
+        'products': products,
+        'product_count': product_count,
+    }
+    return render(request, template_name='store/store.html', context=context)
