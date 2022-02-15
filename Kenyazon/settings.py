@@ -19,8 +19,6 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%wh67$2sm(4+wm3!=+%khw^@tj-1n_y9zl6___kcs+s-duk$^_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -66,6 +64,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'category.context_processor.menu_link',
+                'subcategory.context_processor.menu_link',
             ],
         },
     },
@@ -82,7 +82,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'Kenyazon',
-        'ENFORCE_SCHEMA': False
+        'ENFORCE_SCHEMA': False,
     }
 }
 
